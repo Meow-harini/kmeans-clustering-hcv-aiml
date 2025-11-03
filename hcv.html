@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hepatitis Clustering Code Walkthrough</title>
+<style>
+ body {
+   margin: 0;
+   font-family: 'Segoe UI', sans-serif;
+   background: #f5f7fa;
+   color: #222;
+ }
+ header {
+   background: linear-gradient(135deg, #3c8ce7, #00eaff);
+   padding: 25px;
+   text-align: center;
+   color: white;
+   font-size: 1.8rem;
+   font-weight: bold;
+ }
+ .container {
+   width: 90%;
+   max-width: 1200px;
+   margin: auto;
+   padding: 30px 0;
+ }
+ .section {
+   background: white;
+   padding: 25px;
+   margin-bottom: 25px;
+   border-radius: 12px;
+   box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+ }
+ h2 {
+   margin-top: 0;
+   color: #0d4d94;
+ }
+ pre {
+   background: #1e1e1e;
+   color: #e8e8e8;
+   padding: 18px;
+   border-radius: 10px;
+   overflow-x: auto;
+   font-size: 0.95rem;
+ }
+ ul {
+   margin-top: 10px;
+ }
+ .highlight {
+   background: #e8f4ff;
+   border-left: 4px solid #3c8ce7;
+   padding: 10px 14px;
+   border-radius: 6px;
+ }
+</style>
+</head>
+<body>
+<header>
+ Hepatitis Patient Clustering — Code Walkthrough
+</header>
+<div class="container">
+
+<div class="section">
+<h2>Step 1: Import Libraries</h2>
+<div class="highlight">We import the essential Python packages needed for data preprocessing, clustering, and visualization.</div>
+<pre><code>import pandas as pd
+import numpy as np
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt</code></pre>
+<ul>
+ <li><b>pandas / numpy</b> — handle dataset operations</li>
+ <li><b>LabelEncoder, StandardScaler</b> — prepare data for ML</li>
+ <li><b>KMeans</b> — clustering algorithm</li>
+ <li><b>PCA</b> — reduce dimensions for visualization</li>
+ <li><b>matplotlib</b> — generate cluster plots</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Step 2: Load Dataset</h2>
+<div class="highlight">We load the CSV data file into a DataFrame for processing.</div>
+<pre><code>df = pd.read_csv("HCV-Egy-Data.csv")
+df.head()</code></pre>
+<ul>
+ <li>Reads patient records into a structured table.</li>
+ <li>Allows further manipulation and exploration.</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Step 3: Handle Missing Data</h2>
+<div class="highlight">Missing values are removed to avoid computation errors.</div>
+<pre><code>df = df.dropna()</code></pre>
+<ul>
+ <li>Ensures clean, reliable input.</li>
+ <li>Prevents missing entries from corrupting clustering results.</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Step 4: Encode Categorical Data</h2>
+<div class="highlight">Converts text labels into numeric form for ML processing.</div>
+<pre><code>le = LabelEncoder()
+df['Category'] = le.fit_transform(df['Category'])</code></pre>
+<ul>
+ <li>Machine learning models only work with numeric features.</li>
+ <li>Assigns each unique label a numeric value.</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Step 5: Feature Selection</h2>
+<div class="highlight">Selecting biomedical features relevant to liver function.</div>
+<pre><code>features = ['Age','ALB','ALT','AST','CHOL','CREA','WBC']
+X = df[features]</code></pre>
+<ul>
+ <li>Focuses model on medically meaningful biomarkers.</li>
+ <li>Removes unnecessary data noise.</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Step 6: Feature Scaling</h2>
+<div class="highlight">Standardizes data so all features contribute equally.</div>
+<pre><code>scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)</code></pre>
+<ul>
+ <li>Prevents large-scale features from dominating clustering.</li>
+ <li>Improves stability and reliability of K-Means.</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Step 7: Apply K-Means Clustering</h2>
+<div class="highlight">Grouping patients into clusters based on liver biomarkers.</div>
+<pre><code>kmeans = KMeans(n_clusters=3, random_state=42)
+clusters = kmeans.fit_predict(X_scaled)
+df['Cluster'] = clusters</code></pre>
+<ul>
+ <li>Patients are grouped into health-risk categories.</li>
+ <li>Each cluster indicates similar health biomarker patterns.</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Step 8: PCA for Visualization</h2>
+<div class="highlight">Reducing to 2D to show how clusters separate visually.</div>
+<pre><code>pca = PCA(n_components=2)
+pca_data = pca.fit_transform(X_scaled)
+plt.scatter(pca_data[:,0], pca_data[:,1], c=clusters)
+plt.title("Patient Clusters (PCA View)")
+plt.show()</code></pre>
+<ul>
+ <li>Makes high‑dimensional clustering easy to visualize.</li>
+ <li>Clear separation indicates meaningful clustering.</li>
+</ul>
+</div>
+
+</div>
+</body>
+</html>
